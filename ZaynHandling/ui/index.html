@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>ZaynHandling Editor</title>
+<script src="script.js" defer></script>
+<style>
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 1.6vh;
+    background-color: #1f1339;
+    color: #e3d7ff;
+    user-select: none;
+  }
+
+  #container {
+    position: absolute;
+    left: 5vw;
+    top: 2.5vh;
+    max-height: 95vh;
+    max-width: 90vw;
+    overflow-y: auto;
+    background-color: rgba(55, 20, 100, 0.85);
+    border-radius: 1rem;
+    padding: 1rem;
+    display: none;
+    box-shadow: 0 0 15px #7f6be9;
+  }
+
+  #languageSwitcher {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    user-select: none;
+  }
+
+  #languageSwitcher img {
+    cursor: pointer;
+    width: 28px;
+    border: 2px solid transparent;
+    border-radius: 4px;
+    transition: border-color 0.3s ease;
+  }
+
+  #languageSwitcher img.active {
+    border-color: #b796ff;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+  }
+
+  thead {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: linear-gradient(90deg, #7e4fff, #a668ff);
+    color: white;
+    font-weight: 700;
+    text-align: center;
+  }
+
+  thead td {
+    padding: 0.7em 0.3em;
+    border-bottom: 2px solid #5f3fc6;
+  }
+
+  tbody td {
+    padding: 0.6em 0.4em;
+    border-bottom: 1px solid #553aaa;
+    vertical-align: middle;
+    word-wrap: break-word;
+  }
+
+  tbody tr:hover {
+    background-color: rgba(150, 133, 255, 0.15);
+  }
+
+  .param-name {
+    font-weight: 600;
+    color: #ddaaff;
+    text-align: left;
+    max-width: 140px;
+  }
+
+  .param-desc {
+    font-style: italic;
+    font-size: 0.9em;
+    max-width: 350px;
+    white-space: pre-wrap;
+    color: #cdb9ff;
+    text-align: left;
+    user-select: text;
+  }
+
+  .input,
+  .value {
+    background-color: transparent;
+    border: none;
+    color: #f0e9ff;
+    outline: none;
+    border-bottom: 0.12em solid #b38fff;
+    box-sizing: border-box;
+    width: 6vw;
+    font-weight: 600;
+    font-size: 1.4vh;
+    text-align: center;
+    user-select: text;
+  }
+
+  .input:focus {
+    border-bottom-color: #d9b8ff;
+    color: white;
+  }
+
+  .short {
+    max-width: 6vw;
+  }
+
+  .button {
+    display: inline-block;
+    font-size: 1.6vh;
+    font-weight: 700;
+    color: #d1baff;
+    margin-left: 0.8em;
+    padding: 0.05em 0.4em;
+    border-radius: 0.3rem;
+    border: 1.5px solid #a68eff;
+    user-select: none;
+    background: transparent;
+    transition: all 0.18s ease-in-out;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .button:hover {
+    background-color: #b8a2ff;
+    color: #3a116a;
+    border-color: #b8a2ff;
+  }
+
+  #pushServer {
+    margin-top: 1.2rem;
+    background-color: #a668ff;
+    border: none;
+    border-radius: 0.6rem;
+    color: white;
+    padding: 0.8em 1.6em;
+    font-size: 1.75vh;
+    font-weight: 800;
+    cursor: pointer;
+    user-select: none;
+    box-shadow: 0 0 10px #b6a2ff;
+    transition: background-color 0.3s ease;
+  }
+
+  #pushServer:hover {
+    background-color: #d9b8ff;
+    color: #3a116a;
+  }
+
+  #title {
+    width: 100%;
+    text-align: center;
+    color: #d1baff;
+    margin-top: 0.4rem;
+    font-weight: 700;
+    font-size: 1.8vh;
+    letter-spacing: 0.02em;
+    user-select: none;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar {
+    width: 0.9em;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #2b1e4f;
+    border-radius: 0 0.75rem 0.75rem 0;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #b796ff;
+    border-radius: 0 0.75rem 0.75rem 0;
+    border: 0.2em solid #2b1e4f;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #d6b8ff;
+  }
+
+  /* Vehicle list styling */
+  #vehicleListContainer {
+    margin-top: 1rem;
+    max-height: 15vh;
+    overflow-y: auto;
+    background-color: rgba(55, 20, 100, 0.95);
+    border-radius: 0.75rem;
+    padding: 0.7rem;
+    font-size: 1.2vh;
+    user-select: text;
+  }
+
+  #vehicleList {
+    color: #d1baff;
+  }
+</style>
+</head>
+<body>
+  <div id="container">
+    <div id="languageSwitcher" title="Switch language">
+      <img id="lang_en" src="flags/en.png" alt="English" title="English" />
+      <img id="lang_de" src="flags/de.png" alt="Deutsch" title="Deutsch" />
+      <img id="lang_fr" src="flags/fr.png" alt="Français" title="Français" />
+    </div>
+    <table id="cont_table">
+      <thead>
+        <tr>
+          <td>Name</td>
+          <td>Value</td>
+          <td class="param-desc">Description</td>
+        </tr>
+      </thead>
+      <tbody id="tbody_params">
+        <!-- Dynamische Zeilen werden von script.js eingefügt -->
+      </tbody>
+    </table>
+    <button id="pushServer">Push to Server</button>
+    <div id="vehicleListContainer">
+      <strong>Available Vehicles on Server:</strong>
+      <div id="vehicleList">Loading...</div>
+    </div>
+    <div id="title">© ZaynHandling Editor</div>
+  </div>
+</body>
+</html>
